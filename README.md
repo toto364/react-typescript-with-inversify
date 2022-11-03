@@ -68,3 +68,105 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+# How this repo was composed
+
+This repo was created as followings:
+1. Created a new [ReactJS](https://reactjs.org) app
+```
+npx create-react-app
+```
+2. Installed [TypeScript](https://www.typescriptlang.org)
+```
+npm install --save-dev typescript ts-loader source-map-loader
+npm install @types/react @types/react-dom
+npx tsc --init
+```
+3. Converted `js,jsx` files to `ts,tsx` files, and also fixed code as compiler instructed
+4. Created `./src/types.d.ts` file
+```ts
+declare module "*.svg"
+```
+5. Installed [inversifyJS](https://inversify.io)
+```
+npm install inversify reflect-metadata --save
+```
+6. Updated `tsconfig.json` as followings:
+```json
+{
+    "compilerOptions": {
+        "target": "es5",
+        "lib": ["es6", "dom"],
+        "types": ["reflect-metadata"],
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
+    }
+}
+```
+8. Followed an example at https://inversify.io (some ninja warrior stuffs)
+9. Installed [react-app-rewired](https://www.npmjs.com/package/react-app-rewired) and [customize-cra](https://github.com/arackaf/customize-cra)
+```
+npm install --save-dev react-app-rewired customize-cra 
+```
+10. Updated scripts in `package.json`
+```json
+{
+  "scripts": {
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-scripts eject"
+  }
+}
+```
+11. Installed babel plugins to use decorators and to enable metadata transforming
+```
+npm install --save-dev @babel/plugin-proposal-decorators @babel/preset-typescript babel-plugin-transform-typescript-metadata
+```
+- ref: https://github.com/leonardfactory/babel-plugin-transform-typescript-metadata#readme
+12. Created `.babelrc`
+```json
+{
+    "presets": [
+        [
+            "@babel/preset-typescript",
+            {
+                "onlyRemoveTypeImports": true
+            }
+        ]
+    ],
+    "plugins": [
+        "babel-plugin-transform-typescript-metadata",
+        [
+            "@babel/plugin-proposal-decorators",
+            {
+                "version": "legacy"
+            }
+        ],
+        [
+            "@babel/plugin-proposal-class-properties",
+            {
+                "loose": true
+            }
+        ]
+    ]
+}
+```
+13. Created `config-overrides.js`
+```js
+const {
+    useBabelRc,
+    override,
+} = require("customize-cra");
+
+module.exports = override(
+    useBabelRc(),
+);
+```
+14. To prevent an enormous amount of warning from `rca` with `webpack`, added `GENERATE_SOURCEMAP` variable in `.env`
+```
+GENERATE_SOURCEMAP=false
+```
+15. and **Voila !!**
